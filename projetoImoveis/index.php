@@ -1,3 +1,30 @@
+<?php
+    session_start(); 
+
+    if($_SERVER['REQUEST_METHOD'] == "POST"){
+        require('config/conexao.php');
+        $email = $_POST['email'];
+        $senha = $_POST['senha'];
+        try {
+            $stmt = $pdo->prepare("SELECT*FROM usuarios WHERE email = ?"); //guarda instrução preparada
+            $stmt->execute([$email]);
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if($usuario && password_verify($senha, $usuario['senha'])){
+                $_SESSION['acesso'] = true;
+                $_SESSION['nome'] = $usuario['nome'];
+                header('location: principal.php');
+                exit;
+            }else{
+                $erro_login = "<p class='text-danger text-center mt-3'>Credenciais inválidas!</p>";
+            }
+                
+        } catch(\Exception $e){
+
+            echo "Erro: ".$e->getMessage();
+        }
+    }
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -44,27 +71,6 @@
                         <strong>Erro!</strong> Não foi possível realizar o cadastro.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
-                }
-            }
-            if($_SERVER['REQUEST_METHOD'] == "POST"){
-                require('config/conexao.php');
-                $email = $_POST['email'];
-                $senha = $_POST['senha'];
-                try {
-                    $stmt = $pdo->prepare("SELECT*FROM usuarios WHERE email = ?"); //guarda instrução preparada
-                    $stmt->execute([$email]);
-                    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-                    if($usuario && password_verify($senha, $usuario['senha'])){
-                        session_start();
-                        $_SESSION['acesso'] = true;
-                        $_SESSION['nome'] = $usuario['nome'];
-                        header('location: principal.php');
-                    }else{
-                        echo "<p class='text-danger'>Credenciais inválidas!</p>";
-                    }
-                
-                } catch(\Exception $e){
-                    echo "Erro: ".$e->getMessage();
                 }
             }
         ?>
