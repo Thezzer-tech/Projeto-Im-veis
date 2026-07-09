@@ -1,0 +1,11 @@
+# Usa a imagem oficial do PHP com o servidor Apache embutido
+FROM php:8.2-apache
+
+# Instala e habilita as extensões do MySQL necessárias para o PDO
+RUN docker-php-ext-install pdo pdo_mysql mysqli
+
+# Copia todos os arquivos do seu repositório para a pasta pública do servidor
+COPY . /var/www/html/
+
+# Expõe a porta 80 para a web
+EXPOSE 80
