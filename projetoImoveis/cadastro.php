@@ -1,3 +1,25 @@
+<?php
+    // 1. O PHP VAI PARA O TOPO DA PÁGINA
+    if($_SERVER['REQUEST_METHOD'] == "POST"){
+        require("config/conexao.php");
+        $nome = $_POST['nome'];
+        $email = $_POST['email'];
+        $senha = password_hash($_POST['senha'], PASSWORD_BCRYPT); 
+        
+        try{
+            $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
+            if($stmt->execute([$nome, $email, $senha])){
+                header("location: index.php?cadastro=true"); 
+                exit; // O exit é obrigatório para o redirecionamento não falhar
+            } else{
+                header("location: index.php?cadastro=false"); 
+                exit; // O exit é obrigatório para o redirecionamento não falhar
+            }
+        } catch(Exception $e){
+            $erro_cadastro = "Erro ao executar o comando SQL: ".$e->getMessage();
+        }
+    }    
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -57,7 +79,12 @@
                                     </div>
                                 </div>
 
-                                
+                                <?php 
+                                    if(isset($erro_cadastro)) { 
+                                        echo "<p class='text-danger mt-2'>$erro_cadastro</p>"; 
+                                    } 
+                                ?>
+
                                 <div class="row mt-5">
                                 <div class="col-md-2 offset-md-9 text-start">
                                     <button type="submit" class="btn btn-success px-4">Cadastrar</button>
@@ -74,25 +101,6 @@
             </div>
         </div>
     </div>
-
-    <?php
-        if($_SERVER['REQUEST_METHOD'] == "POST"){
-            require("config/conexao.php");
-            $nome = $_POST['nome'];
-            $email = $_POST['email'];
-            $senha = password_hash($_POST['senha'], PASSWORD_BCRYPT); //usado para proteger senha de usuário antes de salvar no banco, transformando em um string complexa
-            try{
-                $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
-                if($stmt->execute([$nome, $email, $senha])){
-                    header("location: index.php?cadastro=true"); //redirecionamento a página caso cadastro = true
-                } else{
-                    header("location: index.php?cadastro=false"); 
-                }
-            } catch(Exception $e){
-                echo "Erro ao executar o comando SQL: ".$e->getMessage();
-            }
-        }    
-    ?>
 </body>
 </html>
 

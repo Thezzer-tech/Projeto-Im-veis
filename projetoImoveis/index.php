@@ -109,6 +109,13 @@
                                 </div>
                             </div>
 
+                            <?php 
+                                // Exibe a mensagem de erro (se houver) embaixo dos campos
+                                if(isset($erro_login)) { 
+                                    echo $erro_login; 
+                                } 
+                            ?>
+
                             <div class="row mt-5">
                                 <div class="col-md-2 offset-md-9 text-start">
                                     <button type="submit" class="btn btn-primary px-4">Entrar</button>
